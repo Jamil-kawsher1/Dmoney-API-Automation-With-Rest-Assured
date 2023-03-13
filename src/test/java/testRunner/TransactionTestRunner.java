@@ -11,6 +11,7 @@ public class TransactionTestRunner {
     Transaction transaction = new Transaction();
 
     public TransactionTestRunner () throws IOException {
+
     }
 
     @Test(priority = 1,description = "Transaction from System Account To Agent Account ")
@@ -24,8 +25,16 @@ public class TransactionTestRunner {
         transaction.agentToCustomerTransaction();
     }
     @Test(priority = 3,description = "Check Customer Balance")
-    public void checkCustomerBalance(){
+    public void checkCustomerBalance() throws ConfigurationException {
         transaction.checkCustomerBalance();
+    }
+@Test(priority =4,description = "Check Statement")
+    public void checkStatement(){
+        transaction.checkStatement();
+    }
+@Test(priority = 5,description = "Money Withdrawal By Customer")
+    public void moneyWithdrawalByCustomer() throws InterruptedException {
+        transaction.moneyWithdrawalByCustomer();
     }
 }
 

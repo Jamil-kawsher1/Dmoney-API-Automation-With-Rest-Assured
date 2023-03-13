@@ -21,8 +21,8 @@ public class User extends Setup {
     }
 
 
-    public void callingAPI () throws ConfigurationException {
-        UserModel loginModel = new UserModel("salman@roadtocareer.net", "1234");
+    public Response callingAPI (String email, String password) throws ConfigurationException {
+        UserModel loginModel = new UserModel(email, password);
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
         Response res =
                 given()
@@ -32,12 +32,7 @@ public class User extends Setup {
                         .post("/user/login")
                         .then()
                         .assertThat().statusCode(200).extract().response();
-        JsonPath jsonpath = res.jsonPath();
-
-        String token = jsonpath.get("token");
-        String message = jsonpath.get("message");
-        Utils.setEnviromentVariable("token", token);
-        System.out.println(message);
+        return res;
 
 
     }
@@ -92,16 +87,15 @@ public class User extends Setup {
 
     //    String name,String email, String password, String phone_number, String nid, String role
 
-    public void userCreate () throws ConfigurationException, InterruptedException {
+    public Response userCreate (String name, String email, String password, String phone_number, String nid, String role) throws ConfigurationException, InterruptedException {
         Thread.sleep(5000);
-        Utils utils = new Utils();
-        utils.genrateRandomUser();
-        UserModel registerModel = new UserModel(utils.getName(), utils.getEmail(), "1234", Utils.randomNumber(), "19" + Utils.randomNumber(), "Customer");
+
+        UserModel registerModel = new UserModel(name, email, password, phone_number, nid, role);
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
         Response res =
                 given()
                         .contentType("application/json")
-                        .header("Authorization", prop.get("token"))
+                        .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
                         .body(registerModel)
                         .when()
@@ -109,54 +103,33 @@ public class User extends Setup {
 //                        .then()
 //                        .assertThat().statusCode(201).extract().response();
 
-        JsonPath jsonpath = res.jsonPath();
 
-        SoftAssert softAssert = new SoftAssert();
-        String message = jsonpath.get("message");
-        softAssert.assertEquals(message, "controller.User created");
-        Utils.setEnviromentVariable("createdUserPhone", jsonpath.get("user.phone_number"));
-        Utils.setEnviromentVariable("createdUserPassword", jsonpath.get("user.password"));
-        Assert.assertTrue(message.contains("User created"));
-
+        return res;
 
     }
 
 
-    public void agentCreate () throws ConfigurationException {
-        Utils utils = new Utils();
-        utils.genrateRandomUser();
-        UserModel registerModel = new UserModel(utils.getName(), utils.getEmail(), "4X@" + Utils.randomNumber(), Utils.randomNumber(), "19" + Utils.randomNumber(), "Agent");
+    public Response agentCreate (String name, String email, String password, String phone_number, String nid, String role) throws ConfigurationException {
+
+        UserModel registerModel = new UserModel(name, email, password, phone_number, nid, role);
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
         Response res =
                 given()
                         .contentType("application/json")
-                        .header("Authorization", prop.get("token"))
+                        .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
                         .body(registerModel)
                         .when()
                         .post("user/create");
-//                        .then()
-//                        .assertThat().statusCode(201).extract().response();
 
-        JsonPath jsonpath = res.jsonPath();
-
-        SoftAssert softAssert = new SoftAssert();
-        String message = jsonpath.get("message");
-        softAssert.assertEquals(message, "controller.User created");
-        Utils.setEnviromentVariable("createdAgentPhone", jsonpath.get("user.phone_number"));
-        Utils.setEnviromentVariable("createdAgentPassword", jsonpath.get("user.password"));
-
-        Assert.assertTrue(message.contains("User created"));
-//        utils.Utils.setEnviromentVariable("id",jsonpath.get("user.id").toString());
-
-        System.out.println(res.asString());
+        return res;
 
 
     }
 
-    public void searchByCustomerPhoneNumber () throws InterruptedException {
+    public Response searchByCustomerPhoneNumber (String phoneNumber) throws InterruptedException {
         Thread.sleep(8000);
-        String phoneNumber = (String) prop.get("createdUserPhone");
+
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
         Response res =
                 given()
@@ -164,12 +137,12 @@ public class User extends Setup {
                         .header("Authorization", prop.get("token"))
                         .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
                         .when()
-                        .get("/user/search/Phonenumber/" + phoneNumber)
-                        .then().statusCode(200).extract().response();
-        JsonPath jsonPath = res.jsonPath();
-        String message = jsonPath.get("message");
-        Assert.assertTrue(message.contains("User found"));
-        System.out.println(res.asString());
+                        .get("/user/search/Phonenumber/" + phoneNumber);
+
+
+          return res;
+
+
 
     }
 
