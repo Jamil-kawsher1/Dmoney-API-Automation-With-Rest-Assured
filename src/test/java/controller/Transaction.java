@@ -39,9 +39,9 @@ public class Transaction extends Setup {
 
     }
 
-    public Response agentToCustomerTransaction() throws ConfigurationException {
+    public Response agentToCustomerTransaction(String agentPhoneNumber,String customerPhoneNumber,int ammount) throws ConfigurationException {
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
-        TransactionModel agentTransactionModel = new TransactionModel(prop.getProperty("createdAgentPhone"), prop.getProperty("createdUserPhone"), 2000);
+        TransactionModel agentTransactionModel = new TransactionModel(agentPhoneNumber, customerPhoneNumber, ammount);
         Response res =
                 given()
                         .contentType("application/json")
@@ -57,16 +57,16 @@ public class Transaction extends Setup {
 
     }
 
-    public Response checkCustomerBalance() throws ConfigurationException {
+    public Response checkCustomerBalance(boolean methodFlag) throws ConfigurationException {
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
-
+        String methodName=methodFlag?"POST":"GET";
         Response res =
                 given()
                         .contentType("application/json")
                         .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
-                        .when()
-                        .get("transaction/balance/" + prop.getProperty("createdUserPhone"));
+                        .when().request(methodName,"transaction/balance/" + prop.getProperty("createdUserPhone"));
+
 //                        .then().extract().response();
 
         return res;
@@ -75,7 +75,7 @@ public class Transaction extends Setup {
 
     }
 
-    public Response checkStatement() {
+    public Response checkStatement(String transactionId) {
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
         Response res =
                 given()
@@ -83,7 +83,7 @@ public class Transaction extends Setup {
                         .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
                         .when()
-                        .get("transaction/search/" + prop.getProperty("agentAndCustomerLastTransactionId"))
+                        .get("transaction/search/" + transactionId)
                         .then()
                         .extract().response();
         return res;
@@ -91,10 +91,10 @@ public class Transaction extends Setup {
 
     }
 
-    public Response moneyWithdrawalByCustomer() throws InterruptedException {
+    public Response moneyWithdrawalByCustomer(String customerPhoneNumber,String agentPhoneNumber,int amount) throws InterruptedException {
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
 
-        TransactionModel withdrawal = new TransactionModel(prop.getProperty("createdUserPhone"), prop.getProperty("createdAgentPhone"), 1000);
+        TransactionModel withdrawal = new TransactionModel(customerPhoneNumber,agentPhoneNumber, amount);
 
         Thread.sleep(2000);
         Response res =
