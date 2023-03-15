@@ -1,13 +1,13 @@
 package testRunner;
 
 import controller.Transaction;
-import controller.User;
+
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import model.TransactionModel;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import setup.Setup;
@@ -17,15 +17,24 @@ import java.io.IOException;
 
 
 public class TransactionTestRunner extends Setup {
-    Transaction transaction = new Transaction();
 
-    public TransactionTestRunner () throws IOException {
-        intitconfig();
+    static  Transaction transaction;
+
+    static {
+        try {
+            transaction = new Transaction();
+            intitconfig();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @Test(priority = 1, description = "System To User Account Transaction With Invalid get method")
-    public void systemToUserTransactionWithInvalidMethod () throws ConfigurationException {
+
+    @Test(priority = 1, description = "System To User Account Transaction With Invalid get method",enabled = true)
+    public void systemToUserTransactionWithInvalidMethod () throws ConfigurationException, InterruptedException {
+        Thread.sleep(5000);
         boolean methodFlag = false;
+
         Response res = transaction.doTransactionFromSystemToAgent(methodFlag);
         JsonPath jsonPath = res.jsonPath();
         String erroMessage = jsonPath.get("error.message");
@@ -37,9 +46,10 @@ public class TransactionTestRunner extends Setup {
 
     }
 
-    @Test(priority = 2, description = "Transaction from System Account To Agent Account ")
+    @Test(priority = 2, description = "Transaction from System Account To Agent Account ",enabled = true)
     public void systemToAgentTransaction () throws ConfigurationException {
         boolean methodFlag = true;
+
         Response res = transaction.doTransactionFromSystemToAgent(methodFlag);
         JsonPath jsonPath = res.jsonPath();
         String message = jsonPath.get("message");
@@ -53,7 +63,7 @@ public class TransactionTestRunner extends Setup {
 
     }
 
-    @Test(priority = 3, description = "Agent To Customer deposit with Invalid Customer Number")
+    @Test(priority = 3, description = "Agent To Customer deposit with Invalid Customer Number",enabled = true)
     public void agentToCustomerTransactionWithInvalidPhoneNumber () throws ConfigurationException, IOException, InterruptedException {
         intitconfig();
         Thread.sleep(3000);
@@ -70,7 +80,7 @@ public class TransactionTestRunner extends Setup {
 
     }
 
-    @Test(priority = 4, description = "Transaction from Agent to Customer ")
+    @Test(priority = 4, description = "Transaction from Agent to Customer ",enabled = true)
     public void agentToCustomerTransaction () throws ConfigurationException, InterruptedException, IOException {
         intitconfig();
         Thread.sleep(3000);
@@ -89,7 +99,7 @@ public class TransactionTestRunner extends Setup {
         System.out.println(res.asString());
     }
 
-    @Test(priority = 5, description = "Check Customer Balance with Invalid POST Method")
+    @Test(priority = 5, description = "Check Customer Balance with Invalid POST Method",enabled = true)
     public void checkCustomerBalanceWithInvalidMethod () throws ConfigurationException {
         boolean httpMethod = true;
         Response res = transaction.checkCustomerBalance(httpMethod);
@@ -101,7 +111,7 @@ public class TransactionTestRunner extends Setup {
 
     }
 
-    @Test(priority = 6, description = "Check Customer Balance with  valid GET Method")
+    @Test(priority = 6, description = "Check Customer Balance with  valid GET Method",enabled = true)
     public void checkCustomerBalance () throws ConfigurationException {
         boolean httpMethod = false;
         Response res = transaction.checkCustomerBalance(httpMethod);
@@ -127,8 +137,12 @@ public class TransactionTestRunner extends Setup {
     }
 
     @Test(priority = 8, description = "Check Statement with Transaction ID")
-    public void checkStatement () {
+
+    public void checkStatement () throws IOException, InterruptedException {
+        intitconfig();
+        Thread.sleep(3000);
         String customerTransactionId = prop.getProperty("agentAndCustomerLastTransactionId");
+        System.out.println(customerTransactionId);
         Response res = transaction.checkStatement(customerTransactionId);
         JsonPath jsonPath = res.jsonPath();
         System.out.println(res.asString());
@@ -137,7 +151,7 @@ public class TransactionTestRunner extends Setup {
 
     }
 
-    @Test(priority = 9, description = "Money Withdrawal By Customer to An invalid Agent number")
+    @Test(priority = 9, description = "Money Withdrawal By Customer to An invalid Agent number",enabled = true)
     public void moneyWithdrawalByCustomerToAnInvalidAgentNumber () throws InterruptedException {
         String customerPhoneNumber = prop.getProperty("createdUserPhone");
         String agentPhoneNumber = "01819677097";
@@ -152,7 +166,7 @@ public class TransactionTestRunner extends Setup {
         Assert.assertTrue(message.contains("Account does not exist"));
     }
 
-    @Test(priority = 10, description = "Money Withdrawal By Customer")
+    @Test(priority = 10, description = "Money Withdrawal By Customer",enabled = true)
     public void moneyWithdrawalByCustomer () throws InterruptedException, IOException {
         intitconfig();
         Thread.sleep(3000);
@@ -173,66 +187,50 @@ public class TransactionTestRunner extends Setup {
 
     }
 
-//    @BeforeTest
-//    public void createSecondCustomer () throws IOException, ConfigurationException, InterruptedException {
-//        User user = new User();
-//        Utils utils = new Utils();
-//        utils.genrateRandomUser();
-//        intitconfig();
-//        Thread.sleep(3000);
-//        String token = prop.getProperty("token");
-//        Thread.sleep(3000);
-//        Response response = user.userCreate(utils.getName(), utils.getEmail(), "1234", Utils.randomNumber(), "19" + Utils.randomNumber(), "Customer", token);
-//        JsonPath jsonpath = response.jsonPath();
-//
-//
-//        String message = jsonpath.get("message");
-//
-//        System.out.println(response.asString());
-//        Assert.assertTrue(message.contains("User created"));
-//        Utils.setEnviromentVariable("created2ndUserPhone", jsonpath.get("user.phone_number"));
-//        Utils.setEnviromentVariable("created2ndUserPassword", jsonpath.get("user.password"));
-//    }
-    @Test(priority = 11, description = "Send money To an invalid  Customer Number")
+
+    @Test(priority = 11, description = "Send money To an invalid  Customer Number",enabled = true)
     public void sendMoneyToAnInvalidCustomerNumber () throws InterruptedException {
-        String fromNumber= prop.getProperty("createdUserPhone");
-        String toNumber= "01819677097";
-        int amount=500;
+        String fromNumber = prop.getProperty("createdUserPhone");
+        String toNumber = "01819677097";
+        int amount = 500;
 
         Thread.sleep(3000);
-        Response res = transaction.sendMoneyToOtherCustomer(fromNumber,toNumber,amount);
+        Response res = transaction.sendMoneyToOtherCustomer(fromNumber, toNumber, amount);
         System.out.println(res.asString());
-        JsonPath jsonPath=res.jsonPath();
-        String message=jsonPath.get("message");
+        JsonPath jsonPath = res.jsonPath();
+        String message = jsonPath.get("message");
         Assert.assertTrue(message.contains("From/To Account does not exist"));
     }
-    @Test(priority = 12, description = "Send money To another Customer")
+
+    @Test(priority = 12, description = "Send money To another Customer",enabled = true)
     public void sendMoney () throws InterruptedException, IOException {
         intitconfig();
         Thread.sleep(3000);
-        String fromNumber= prop.getProperty("createdUserPhone");
-        String toNumber= prop.getProperty("created2ndUserPhone");
-        int amount=500;
+        String fromNumber = prop.getProperty("createdUserPhone");
+        String toNumber = prop.getProperty("created2ndUserPhone");
+        int amount = 500;
 
         Thread.sleep(3000);
-        Response res = transaction.sendMoneyToOtherCustomer(fromNumber,toNumber,amount);
+        Response res = transaction.sendMoneyToOtherCustomer(fromNumber, toNumber, amount);
         System.out.println(res.asString());
-        JsonPath jsonPath=res.jsonPath();
-        String message=jsonPath.get("message");
+        JsonPath jsonPath = res.jsonPath();
+        String message = jsonPath.get("message");
         Assert.assertTrue(message.contains("Send money successful"));
     }
-    @Test(priority = 13, description = "Check Customer Statement with phone Number")
+
+    @Test(priority = 13, description = "Check Customer Statement with phone Number",enabled = true)
     public void checkCustomerStatementWithInvalidPhoneNumber () {
-        String firstCustomerPhone="01819677097";
+        String firstCustomerPhone = "01819677097";
         Response res = transaction.checkCustomerStatement(firstCustomerPhone);
         JsonPath jsonPath = res.jsonPath();
         System.out.println(res.asString());
         String message = jsonPath.get("message");
         Assert.assertTrue(message.contains("User not found"));
     }
-    @Test(priority = 14, description = "Check Customer Statement with phone Number")
+
+    @Test(priority = 14, description = "Check Customer Statement with phone Number",enabled = true)
     public void checkCustomerStatement () {
-        String firstCustomerPhone=prop.getProperty("createdUserPhone");
+        String firstCustomerPhone = prop.getProperty("createdUserPhone");
         Response res = transaction.checkCustomerStatement(firstCustomerPhone);
         JsonPath jsonPath = res.jsonPath();
         System.out.println(res.asString());

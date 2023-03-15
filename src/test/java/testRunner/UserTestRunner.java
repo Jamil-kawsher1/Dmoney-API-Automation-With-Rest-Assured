@@ -32,7 +32,7 @@ public class UserTestRunner extends Setup {
     }
 
     @Test(priority = 2, description = "Do Login With valid credential")
-    public void doLogin () throws ConfigurationException {
+    public void doLogin () throws ConfigurationException, IOException {
 
         Response response = user.callingAPI("salman@roadtocareer.net", "1234");
         JsonPath jsonPath = response.jsonPath();
@@ -41,6 +41,7 @@ public class UserTestRunner extends Setup {
         String message = jsonPath.get("message");
         Assert.assertTrue(message.contains("Login successfully"));
         Utils.setEnviromentVariable("token", token);
+        intitconfig();
     }
 
 
@@ -62,7 +63,7 @@ public class UserTestRunner extends Setup {
     }
 
     @Test(priority = 4, description = "Create New User", enabled = true)
-    public void createNewUser () throws ConfigurationException, InterruptedException {
+    public void createNewUser () throws ConfigurationException, InterruptedException, IOException {
         Utils utils = new Utils();
         utils.genrateRandomUser();
         String email=utils.email;
@@ -78,10 +79,11 @@ public class UserTestRunner extends Setup {
         Utils.setEnviromentVariable("createdUserPhone", jsonpath.get("user.phone_number"));
         Utils.setEnviromentVariable("createdUserPassword", jsonpath.get("user.password"));
         Utils.setEnviromentVariable("createdUserEmail", jsonpath.get("user.email"));
+        intitconfig();
     }
 
-    @Test(priority = 5, description = "Create New User", enabled = true)
-    public void createNewSecondUser () throws ConfigurationException, InterruptedException {
+    @Test(priority = 5, description = "Create New Second User", enabled = true)
+    public void createNewSecondUser () throws ConfigurationException, InterruptedException, IOException {
         Utils utils = new Utils();
         utils.genrateRandomUser();
         String token = prop.getProperty("token");
@@ -95,6 +97,7 @@ public class UserTestRunner extends Setup {
         Assert.assertTrue(message.contains("User created"));
         Utils.setEnviromentVariable("created2ndUserPhone", jsonpath.get("user.phone_number"));
         Utils.setEnviromentVariable("created2ndUserPassword", jsonpath.get("user.password"));
+        intitconfig();
     }
 
     @Test(priority = 6, description = "New user Creation with Invalid token")
@@ -116,7 +119,7 @@ public class UserTestRunner extends Setup {
     }
 
     @Test(priority = 7, description = "Create New Agent", enabled = true)
-    public void createNewAgent () throws ConfigurationException, InterruptedException {
+    public void createNewAgent () throws ConfigurationException, InterruptedException, IOException {
         Utils utils = new Utils();
         utils.genrateRandomUser();
         String token = prop.getProperty("token");
@@ -132,7 +135,7 @@ public class UserTestRunner extends Setup {
         Utils.setEnviromentVariable("createdAgentPhone", jsonpath.get("user.phone_number"));
         Utils.setEnviromentVariable("createdAgentPassword", jsonpath.get("user.password"));
 
-
+        intitconfig();
     }
 
     @Test(priority = 8, description = "Search User With Invalid Phone Number")
@@ -145,6 +148,7 @@ public class UserTestRunner extends Setup {
         String message = jsonPath.get("message");
         System.out.println(res.asString());
         Assert.assertTrue(message.contains("User not found"));
+        intitconfig();
     }
 
     @Test(priority = 9, description = "Search User by Phone Number", enabled = true)
@@ -155,5 +159,6 @@ public class UserTestRunner extends Setup {
         String message = jsonPath.get("message");
         System.out.println(res.asString());
         Assert.assertTrue(message.contains("User found"));
+        intitconfig();
     }
 }

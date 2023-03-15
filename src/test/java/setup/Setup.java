@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class Setup {
-    public Properties prop;
+    public static Properties prop;
     @BeforeTest
     //This Function will load the config file so that we can read config file property when we need them
-    public void intitconfig() throws IOException {
+    public static void intitconfig () throws IOException {
         prop=new Properties();
         FileInputStream file=new FileInputStream("./src/test/resources/config.properties");
         prop.load(file);

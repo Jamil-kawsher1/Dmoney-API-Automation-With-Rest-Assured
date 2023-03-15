@@ -17,9 +17,15 @@ import java.io.IOException;
 import static io.restassured.RestAssured.given;
 
 public class Transaction extends Setup {
-
-    public Transaction() throws IOException {
+static {
+    try {
         intitconfig();
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+}
+    public Transaction() throws IOException {
+
     }
 
     public Response doTransactionFromSystemToAgent(boolean methodFlag) throws ConfigurationException {
