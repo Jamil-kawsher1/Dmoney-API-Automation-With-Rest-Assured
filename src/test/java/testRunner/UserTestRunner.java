@@ -48,19 +48,37 @@ public  void doLoginWithInvalidCredential() throws ConfigurationException {
 
     }
     @Test(priority = 4,description = "User creation With Invalid Phone Number")
-public void createNewUserWithInvalidPhoneNumber() throws ConfigurationException, InterruptedException {
+public void createNewUserWithInvalidPhoneNumber() throws ConfigurationException, InterruptedException, IOException {
 
     Utils utils = new Utils();
     utils.genrateRandomUser();
+    intitconfig();
+    Thread.sleep(3000);
     String token = prop.getProperty("token");
     Response response = user.userCreate(utils.getName(), utils.getEmail(), "1234","01673534", "19" + Utils.randomNumber(), "Customer",token);
     JsonPath jsonpath = response.jsonPath();
     System.out.println(response.asString());
     String message = jsonpath.get("message");
+//    String errorMessage=jsonpath.get("error.message");
+//try {
+//    if (errorMessage.contains("Token expired!")){
+////        Response responses = user.callingAPI("salman@roadtocareer.net", "1234");
+////        JsonPath jsonPath=responses.jsonPath();
+////        String tokenf = jsonPath.get("token");
+////        Utils.setEnviromentVariable("token", tokenf);
+//        intitconfig();
+//       createNewUserWithInvalidPhoneNumber();
+//    }
+//    else {
+//        Assert.assertTrue(message.contains("length must be at least 11 characters long"));
+//    }
+//}
+//catch ( IOException e){
+//
+//}
+        Assert.assertTrue(message.contains("length must be at least 11 characters long"));
 
-
-    Assert.assertTrue(message.contains("length must be at least 11 characters long"));
-}
+    }
     @Test(priority = 5, description = "Create New User", enabled = true)
     public void createNewUser () throws ConfigurationException, InterruptedException {
         Utils utils = new Utils();
@@ -116,8 +134,10 @@ public void  createNewAgentWithoutProperToken() throws ConfigurationException, I
     }
 
 @Test(priority = 8,description = "Search User With Invalid Phone Number")
-    public void searchUserWithInvalidPhoneNumber() throws InterruptedException {
+    public void searchUserWithInvalidPhoneNumber() throws InterruptedException, IOException {
         String phoneNumber = "01819677097";
+        intitconfig();
+        String token=prop.getProperty("token");
         Response res = user.searchByCustomerPhoneNumber(phoneNumber);
         JsonPath jsonPath = res.jsonPath();
         String message = jsonPath.get("message");
@@ -125,7 +145,7 @@ public void  createNewAgentWithoutProperToken() throws ConfigurationException, I
         Assert.assertTrue(message.contains("User not found"));
     }
     @Test(priority = 9, description = "Search User by Phone Number", enabled = true)
-    public void searchByCustomerPhoneNumber () throws InterruptedException {
+    public void searchByCustomerPhoneNumber () throws InterruptedException, IOException {
         String phoneNumber = prop.getProperty("createdUserPhone");
         Response res = user.searchByCustomerPhoneNumber(phoneNumber);
         JsonPath jsonPath = res.jsonPath();

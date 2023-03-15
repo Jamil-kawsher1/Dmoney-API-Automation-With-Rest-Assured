@@ -22,8 +22,9 @@ public class Transaction extends Setup {
         intitconfig();
     }
 
-    public Response doTransactionFromSystemToAgent() throws ConfigurationException {
+    public Response doTransactionFromSystemToAgent(boolean methodFlag) throws ConfigurationException {
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
+      String methodName=methodFlag?"POST":"GET";
         TransactionModel systemToAgentTransaction = new TransactionModel("SYSTEM", prop.getProperty("createdAgentPhone"), 5000);
         Response res =
                 given()
@@ -31,8 +32,8 @@ public class Transaction extends Setup {
                         .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
                         .body(systemToAgentTransaction)
-                        .when()
-                        .post("transaction/deposit");
+                        .when().request(methodName,"transaction/deposit");
+
 //                        .then().extract().response();
         return res;
 

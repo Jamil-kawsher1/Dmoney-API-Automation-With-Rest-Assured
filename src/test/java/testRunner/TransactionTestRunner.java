@@ -21,10 +21,23 @@ public class TransactionTestRunner extends Setup {
     public TransactionTestRunner() throws IOException {
         intitconfig();
     }
+@Test(priority = 1,description = "System To User Account Transaction With Invalid get method")
+    public void systemToUserTransactionWithInvalidMethod() throws ConfigurationException {
+        boolean methodFlag=false;
+        Response res = transaction.doTransactionFromSystemToAgent(methodFlag);
+        JsonPath jsonPath = res.jsonPath();
+        String erroMessage = jsonPath.get("error.message");
+        System.out.println(res.asString());
+//        Assert.assertTrue(message.contains("Deposit successful"));
 
-    @Test(priority = 1, description = "Transaction from System Account To Agent Account ")
+
+        Assert.assertTrue(erroMessage.contains("Not Found"));
+
+    }
+    @Test(priority = 2, description = "Transaction from System Account To Agent Account ")
     public void systemToAgentTransaction() throws ConfigurationException {
-        Response res = transaction.doTransactionFromSystemToAgent();
+        boolean methodFlag=true;
+        Response res = transaction.doTransactionFromSystemToAgent(methodFlag);
         JsonPath jsonPath = res.jsonPath();
         String message = jsonPath.get("message");
         System.out.println(res.asString());
@@ -37,7 +50,7 @@ public class TransactionTestRunner extends Setup {
 
     }
 
-    @Test(priority = 2, description = "Transaction from Agent to Customer ")
+    @Test(priority = 3, description = "Transaction from Agent to Customer ")
     public void agentToCustomerTransaction() throws ConfigurationException {
         Response res = transaction.agentToCustomerTransaction();
         JsonPath jsonPath = res.jsonPath();
@@ -50,7 +63,7 @@ public class TransactionTestRunner extends Setup {
         System.out.println(res.asString());
     }
 
-    @Test(priority = 3, description = "Check Customer Balance")
+    @Test(priority = 4, description = "Check Customer Balance")
     public void checkCustomerBalance() throws ConfigurationException {
         Response res = transaction.checkCustomerBalance();
         JsonPath jsonPath = res.jsonPath();
@@ -63,7 +76,7 @@ public class TransactionTestRunner extends Setup {
 
     }
 
-    @Test(priority = 4, description = "Check Statement")
+    @Test(priority = 5, description = "Check Statement")
     public void checkStatement() {
         Response res = transaction.checkStatement();
         JsonPath jsonPath = res.jsonPath();
@@ -73,7 +86,7 @@ public class TransactionTestRunner extends Setup {
 
     }
 
-    @Test(priority = 5, description = "Money Withdrawal By Customer")
+    @Test(priority = 6, description = "Money Withdrawal By Customer")
     public void moneyWithdrawalByCustomer() throws InterruptedException {
         Response res = transaction.moneyWithdrawalByCustomer();
         int amount = 1000;
@@ -107,13 +120,13 @@ public class TransactionTestRunner extends Setup {
         Utils.setEnviromentVariable("created2ndUserPassword", jsonpath.get("user.password"));
     }
 
-    @Test(priority = 5, description = "Send money To another Customer")
+    @Test(priority = 7, description = "Send money To another Customer")
     public void sendMoney() throws InterruptedException {
         Thread.sleep(3000);
         Response res = transaction.sendMoneyToOtherCustomer();
         System.out.println(res.asString());
     }
-@Test(priority = 6,description = "Check Customer Statement")
+@Test(priority = 8,description = "Check Customer Statement")
    public void checkCustomerStatement(){
         Response res=transaction.checkCustomerStatement();
         JsonPath jsonPath=res.jsonPath();

@@ -5,8 +5,6 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import model.UserModel;
 import org.apache.commons.configuration.ConfigurationException;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
 import setup.Setup;
 import utils.Utils;
 
@@ -48,11 +46,7 @@ public class User extends Setup {
                         .get("/user/list")
                         .then()
                         .assertThat().statusCode(200).extract().response();
-//        JsonPath jsonpath = res.jsonPath();
-//
-//        String token = jsonpath.get("token");
-//        String message = jsonpath.get("meassge");
-//        utils.Utils.setEnviromentVariable("token", token);
+
 
         //getting All JSOn Path so that we can access our needed one
         JsonPath jsonPath = res.jsonPath();
@@ -130,8 +124,10 @@ public class User extends Setup {
 
     }
 
-    public Response searchByCustomerPhoneNumber (String phoneNumber) throws InterruptedException {
+    public Response searchByCustomerPhoneNumber (String phoneNumber) throws InterruptedException, IOException {
         Thread.sleep(8000);
+        intitconfig();
+        Thread.sleep(3000);
         String token = prop.getProperty("token");
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
         Response res =
