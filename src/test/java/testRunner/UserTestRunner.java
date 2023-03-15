@@ -19,8 +19,17 @@ public class UserTestRunner extends Setup {
     public UserTestRunner () throws IOException {
         intitconfig();
     }
+    @Test(priority = 1,description = "User Try to Login With Invalid credential")
+public  void doLoginWithInvalidCredential() throws ConfigurationException {
+    Response response = user.callingAPI("salman@roadtocareere.net", "1234");
+    JsonPath jsonPath = response.jsonPath();
+    System.out.println(response.asString());
+    String message = jsonPath.get("message");
+    Assert.assertTrue(message.contains("User not found"));
 
-    @Test(priority = 1, description = "Do Login With valid credential")
+
+}
+    @Test(priority = 2, description = "Do Login With valid credential")
     public void doLogin () throws ConfigurationException {
 
         Response response = user.callingAPI("salman@roadtocareer.net", "1234");
@@ -32,21 +41,35 @@ public class UserTestRunner extends Setup {
         Utils.setEnviromentVariable("token", token);
     }
 
-    @Test(priority = 2, description = "Get Whole User List", enabled = false)
+    @Test(priority = 3, description = "Get Whole User List", enabled = false)
     public void getUserList () throws ConfigurationException, IOException {
         user.getUserList();
 
 
     }
+    @Test(priority = 4,description = "User creation With Invalid Phone Number")
+public void createNewUserWithInvalidPhoneNumber() throws ConfigurationException, InterruptedException {
 
-    @Test(priority = 3, description = "Create New User", enabled = true)
+    Utils utils = new Utils();
+    utils.genrateRandomUser();
+    String token = prop.getProperty("token");
+    Response response = user.userCreate(utils.getName(), utils.getEmail(), "1234","01673534", "19" + Utils.randomNumber(), "Customer",token);
+    JsonPath jsonpath = response.jsonPath();
+    System.out.println(response.asString());
+    String message = jsonpath.get("message");
+
+
+    Assert.assertTrue(message.contains("length must be at least 11 characters long"));
+}
+    @Test(priority = 5, description = "Create New User", enabled = true)
     public void createNewUser () throws ConfigurationException, InterruptedException {
         Utils utils = new Utils();
         utils.genrateRandomUser();
-        Response response = user.userCreate(utils.getName(), utils.getEmail(), "1234", Utils.randomNumber(), "19" + Utils.randomNumber(), "Customer");
+        String token = prop.getProperty("token");
+        Response response = user.userCreate(utils.getName(), utils.getEmail(), "1234", Utils.randomNumber(), "19" + Utils.randomNumber(), "Customer",token);
         JsonPath jsonpath = response.jsonPath();
 
-        SoftAssert softAssert = new SoftAssert();
+
         String message = jsonpath.get("message");
 
         System.out.println(response.asString());
@@ -54,12 +77,31 @@ public class UserTestRunner extends Setup {
         Utils.setEnviromentVariable("createdUserPhone", jsonpath.get("user.phone_number"));
         Utils.setEnviromentVariable("createdUserPassword", jsonpath.get("user.password"));
     }
+@Test(priority = 6,description = "New user Creation with Invalid token")
+public void  createNewAgentWithoutProperToken() throws ConfigurationException, InterruptedException {
+    Utils utils = new Utils();
+    utils.genrateRandomUser();
+    String token ="yfuwebfuyewbfuybwefuyewufuyvbew";
 
-    @Test(priority = 4, description = "Create New Agent", enabled = true)
-    public void createNewAgent () throws ConfigurationException {
+    Response res = user.agentCreate(utils.getName(), utils.getEmail(), "4X@" + Utils.randomNumber(), Utils.randomNumber(), "19" + Utils.randomNumber(), "Agent",token);
+
+    JsonPath jsonpath = res.jsonPath();
+
+
+    String message = jsonpath.get("error.message");
+    System.out.println(res.asString());
+    Assert.assertTrue(message.contains("Token expired"));
+
+
+}
+
+    @Test(priority = 7, description = "Create New Agent", enabled = true)
+    public void createNewAgent () throws ConfigurationException, InterruptedException {
         Utils utils = new Utils();
         utils.genrateRandomUser();
-        Response res = user.agentCreate(utils.getName(), utils.getEmail(), "4X@" + Utils.randomNumber(), Utils.randomNumber(), "19" + Utils.randomNumber(), "Agent");
+        String token = prop.getProperty("token");
+        Thread.sleep(3000);
+        Response res = user.agentCreate(utils.getName(), utils.getEmail(), "4X@" + Utils.randomNumber(), Utils.randomNumber(), "19" + Utils.randomNumber(), "Agent",token);
 
         JsonPath jsonpath = res.jsonPath();
 
@@ -73,7 +115,16 @@ public class UserTestRunner extends Setup {
 
     }
 
-    @Test(priority = 5, description = "Search User by Phone Number", enabled = true)
+@Test(priority = 8,description = "Search User With Invalid Phone Number")
+    public void searchUserWithInvalidPhoneNumber() throws InterruptedException {
+        String phoneNumber = "01819677097";
+        Response res = user.searchByCustomerPhoneNumber(phoneNumber);
+        JsonPath jsonPath = res.jsonPath();
+        String message = jsonPath.get("message");
+        System.out.println(res.asString());
+        Assert.assertTrue(message.contains("User not found"));
+    }
+    @Test(priority = 9, description = "Search User by Phone Number", enabled = true)
     public void searchByCustomerPhoneNumber () throws InterruptedException {
         String phoneNumber = prop.getProperty("createdUserPhone");
         Response res = user.searchByCustomerPhoneNumber(phoneNumber);

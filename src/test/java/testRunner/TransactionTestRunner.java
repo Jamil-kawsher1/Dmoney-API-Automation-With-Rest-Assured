@@ -93,7 +93,9 @@ public class TransactionTestRunner extends Setup {
         User user = new User();
         Utils utils = new Utils();
         utils.genrateRandomUser();
-        Response response = user.userCreate(utils.getName(), utils.getEmail(), "1234", Utils.randomNumber(), "19" + Utils.randomNumber(), "Customer");
+        String token = prop.getProperty("token");
+        Thread.sleep(3000);
+        Response response = user.userCreate(utils.getName(), utils.getEmail(), "1234", Utils.randomNumber(), "19" + Utils.randomNumber(), "Customer",token);
         JsonPath jsonpath = response.jsonPath();
 
 
@@ -116,6 +118,8 @@ public class TransactionTestRunner extends Setup {
         Response res=transaction.checkCustomerStatement();
         JsonPath jsonPath=res.jsonPath();
        System.out.println(res.asString());
+       String message=jsonPath.get("message");
+       Assert.assertTrue(message.contains("Transaction list"));
    }
 }
 

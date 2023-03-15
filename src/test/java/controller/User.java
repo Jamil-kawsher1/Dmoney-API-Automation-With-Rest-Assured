@@ -29,9 +29,9 @@ public class User extends Setup {
                         .contentType("application/json")
                         .body(loginModel)
                         .when()
-                        .post("/user/login")
-                        .then()
-                        .assertThat().statusCode(200).extract().response();
+                        .post("/user/login");
+
+
         return res;
 
 
@@ -43,7 +43,7 @@ public class User extends Setup {
         Response res =
                 given()
                         .contentType("application/json")
-                        .header("Authorization", Utils.readConfigFile().get("token"))
+                        .header("Authorization", Utils.readConfigFile().getProperty("token"))
                         .when()
                         .get("/user/list")
                         .then()
@@ -69,7 +69,7 @@ public class User extends Setup {
         Response res =
                 given()
                         .contentType("application/json")
-                        .header("Authorization", prop.get("token"))
+                        .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
                         .when()
                         .get("/user/search/id=1281")
@@ -87,15 +87,16 @@ public class User extends Setup {
 
     //    String name,String email, String password, String phone_number, String nid, String role
 
-    public Response userCreate (String name, String email, String password, String phone_number, String nid, String role) throws ConfigurationException, InterruptedException {
+    public Response userCreate (String name, String email, String password, String phone_number, String nid, String role,String token) throws ConfigurationException, InterruptedException {
         Thread.sleep(5000);
 
+        Thread.sleep(2000);
         UserModel registerModel = new UserModel(name, email, password, phone_number, nid, role);
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
         Response res =
                 given()
                         .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
+                        .header("Authorization", token)
                         .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
                         .body(registerModel)
                         .when()
@@ -109,14 +110,16 @@ public class User extends Setup {
     }
 
 
-    public Response agentCreate (String name, String email, String password, String phone_number, String nid, String role) throws ConfigurationException {
+    public Response agentCreate (String name, String email, String password, String phone_number, String nid, String role,String token) throws ConfigurationException, InterruptedException {
 
         UserModel registerModel = new UserModel(name, email, password, phone_number, nid, role);
+
+        Thread.sleep(2000);
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
         Response res =
                 given()
                         .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
+                        .header("Authorization", token)
                         .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
                         .body(registerModel)
                         .when()
@@ -129,19 +132,18 @@ public class User extends Setup {
 
     public Response searchByCustomerPhoneNumber (String phoneNumber) throws InterruptedException {
         Thread.sleep(8000);
-
+        String token = prop.getProperty("token");
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
         Response res =
                 given()
                         .contentType("application/json")
-                        .header("Authorization", prop.get("token"))
+                        .header("Authorization", token)
                         .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
                         .when()
                         .get("/user/search/Phonenumber/" + phoneNumber);
 
 
-          return res;
-
+        return res;
 
 
     }
