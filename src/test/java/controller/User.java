@@ -36,50 +36,13 @@ public class User extends Setup {
     }
 
 
-    public void getUserList () throws ConfigurationException, IOException {
-        RestAssured.baseURI = "http://dmoney.roadtocareer.net";
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", Utils.readConfigFile().getProperty("token"))
-                        .when()
-                        .get("/user/list")
-                        .then()
-                        .assertThat().statusCode(200).extract().response();
 
 
-        //getting All JSOn Path so that we can access our needed one
-        JsonPath jsonPath = res.jsonPath();
-        //now accessing only user list
-        String usersList = jsonPath.get("users").toString();
-//        System.out.println(res.asString());//asString() method will convert json Stream as a simple String value
-
-        System.out.println(usersList);
-    }
 
 
-    public void getSingleUserInfo () {
-        RestAssured.baseURI = "http://dmoney.roadtocareer.net";
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
-                        .when()
-                        .get("/user/search/id=1281")
-                        .then()
-                        .assertThat().statusCode(200).extract().response();
-
-        JsonPath jsonPath = res.jsonPath();
-        //now accessing only user list
-//        String usersList=jsonPath.get("user").toString();
-//        System.out.println(res.asString());//asString() method will convert json Stream as a simple String value
-
-        System.out.println(res.asString());
-    }
 
 
-    //    String name,String email, String password, String phone_number, String nid, String role
+
 
     public Response userCreate (String name, String email, String password, String phone_number, String nid, String role,String token) throws ConfigurationException, InterruptedException {
         Thread.sleep(5000);

@@ -24,9 +24,12 @@ dependencies {
 // https://mvnrepository.com/artifact/com.github.javafaker/javafaker
     implementation group: 'com.github.javafaker', name: 'javafaker', version: '1.0.2'
 
-
+// https://mvnrepository.com/artifact/io.qameta.allure/allure-testng
+    implementation group: 'io.qameta.allure', name: 'allure-testng', version: '2.21.0'
 }
 
 test {
-    useJUnitPlatform()
+    useTestNG() {
+        suites "./src/test/resources/suite.xml"
+    }
 }

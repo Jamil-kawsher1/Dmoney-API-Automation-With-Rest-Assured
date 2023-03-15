@@ -115,10 +115,10 @@ public class Transaction extends Setup {
 
 
 
-    public Response sendMoneyToOtherCustomer() {
+    public Response sendMoneyToOtherCustomer(String fromNumber,String toNumber,int amount) {
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
 
-        TransactionModel sendMoney = new TransactionModel(prop.getProperty("createdUserPhone"), prop.getProperty("created2ndUserPhone"), 500);
+        TransactionModel sendMoney = new TransactionModel(fromNumber,toNumber,amount);
 
 
         Response res =
@@ -134,9 +134,9 @@ public class Transaction extends Setup {
         return res;
     }
 
-    public Response checkCustomerStatement(){
+    public Response checkCustomerStatement(String phoneNumber){
         RestAssured.baseURI = "http://dmoney.roadtocareer.net";
-        String firstCustomerPhone=prop.getProperty("createdUserPhone");
+
 
 
 
@@ -146,7 +146,7 @@ public class Transaction extends Setup {
                         .contentType("application/json")
                         .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", "ROADTOSDET")
-                        .get("transaction/statement/"+firstCustomerPhone)
+                        .get("transaction/statement/"+phoneNumber)
                         .then()
                         .extract().response();
         return res;
